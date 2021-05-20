@@ -25,7 +25,7 @@
           <v-btn
            icon 
            class="delete-btn"
-          @click="$store.commit('deleteMessage', message.id)"
+          @click="delConfirm(message.id)"
           >
             <v-icon> mdi-close-circle-outline </v-icon>
           </v-btn>
@@ -36,6 +36,9 @@
 
       <p class="mt-2">{{message.text }}</p>
     </v-card>
+
+    <ConfirmDlg ref="confirm" />
+
   </div>
 </template>
 
@@ -49,12 +52,24 @@ export default {
     props: [
         'message',
     ],
+    components: {
+      ConfirmDlg: () => import("./ConfirmDlg"),
+    },
     methods: {
+      async delConfirm(message_id) {
+        if (
+          await this.$refs.confirm.open(
+            "Confirm",
+            "Are you sure you want to delete this message?"
+          )
+        ) {
+          this.$store.commit('deleteMessage', message_id)
+        }
+      },
         from_now (time_stamp) {
             if ( !time_stamp ) {
                 return ''
             }
-
              try {
                 return dayjs(time_stamp.toDate()).fromNow()
             } catch {

@@ -15,29 +15,35 @@ export const store = new Vuex.Store({
 	},
 	mutations: {
 		async getMessages(state) {
-            console.log('getMessages')
+			console.log('getMessages')
 			state.loading = true
 			try {
-				const { docs } = await messages_collection
-                .where('is_deleted', '==', false)
-                    .orderBy('timestamp', 'desc')
-                    .get()
+				const {
+					docs
+				} = await messages_collection
+					.where('is_deleted', '==', false)
+					.orderBy('timestamp', 'desc')
+					.get()
 
 				state.messages = docs.map(doc => {
-					const { id } = doc
+					const {
+						id
+					} = doc
 					const data = doc.data()
-					return { id, ...data
+					return {
+						id,
+						...data
 					}
 				})
-                state.loading = false
+				state.loading = false
 
 			} catch (error) {
-                state.loading = false
+				state.loading = false
 				throw new Error(`Something gone wrong! [${error}]`)
 			}
 		},
 		toggleMarkAsRead(state, message_id) {
-            console.log('toggleMarkAsRead')
+			console.log('toggleMarkAsRead')
 			const index = _findIndex(state.messages, ['id', message_id]);
 			let message = state.messages[index]
 
@@ -57,18 +63,16 @@ export const store = new Vuex.Store({
 				});
 
 		},
-        addMessage (state, message_text) {
-            messages_collection.add(
-                {
-                  text: message_text,
-                  timestamp: new Date(),
-                  is_deleted: false,
-                  is_read: false
-                }
-              )
-          },
+		addMessage(state, message_text) {
+			messages_collection.add({
+				text: message_text,
+				timestamp: new Date(),
+				is_deleted: false,
+				is_read: false
+			})
+		},
 		deleteMessage(state, message_id) {
-            console.log('deleteMessage')
+			console.log('deleteMessage')
 			const index = _findIndex(state.messages, ['id', message_id]);
 			state.messages.splice(index, 1)
 
